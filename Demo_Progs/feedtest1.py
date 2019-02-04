@@ -1,24 +1,28 @@
 import feedparser
 import time
-def newstest(feed, spot):
-	d = feedparser.parse(feed)
-	choice = ""
-	while choice != "quit":
-		print "starting"
+import threading
+import os
+def newstest(feed, start, fin):
+	while True:
+		d = feedparser.parse(feed)
 		print "Feed title: " + d['feed']['title']
-		arts = len(d['entries'])
-		for i in range(0,arts):
-			print "Article " + str(i+1) + ": " + d['entries'][i]['title']
-			time.sleep(5)
-		choice = raw_input("Go again?")
+		for i in range(start,fin+1):
+			print "Headline " + str(i) + ": " + d['entries'][i]['title']
+		blah=input()
+		time.sleep(10)
+		clear = lambda: os.system('clear')
+		clear()		
 
 def weathertest(feed, spot):
 	d = feedparser.parse(feed)
 	print "Feed title: " + d['channel']['title']
 def ask():
+	type = raw_input("What type of feed do you want to run?: ")
 	feed = raw_input("Please enter a feed url: ")
-	spot = int(raw_input("Please enter a article number: "))
-	newstest(feed, spot-1)
+	num = raw_input("Please enter the range of entries: ")
+	nums = num.split(" ")
+	if(type == "news"):
+		newstest(feed, int(nums[0]), int(nums[1]))
 	return
 
 ask()
