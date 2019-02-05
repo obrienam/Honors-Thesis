@@ -8,8 +8,7 @@ def newstest(feed, start, fin):
 		print "Feed title: " + d['feed']['title']
 		for i in range(start,fin+1):
 			print "Headline " + str(i) + ": " + d['entries'][i]['title']
-		blah=input()
-		time.sleep(10)
+		time.sleep(5)
 		clear = lambda: os.system('clear')
 		clear()		
 
