@@ -26,7 +26,7 @@ def weathertest(feed, prefs, days):
 	while True:
 		print "Today"
 		print d['entries'][0]['description']
-		for i in range(0,2*days-1):
+		for i in range(0,2*days):
 			print d['entries'][i+1]['title']
 			forecast = d['entries'][i+1]['description']
 			if(prefs[0] == "None"):
@@ -35,7 +35,7 @@ def weathertest(feed, prefs, days):
 				forecasts = forecast.split()
 				data = search(prefs, forecasts)
 				print data
-				if (i)%2 == 0:
+				if (i+1)%2 == 0:
 					print "\n"
 		time.sleep(5)
 		clear = lambda: os.system('clear')
