@@ -28,7 +28,7 @@ def weathertest(feed, prefs, days):
 		print d['entries'][0]['description']
 		for i in range(0,2*days):
 			print d['entries'][i+1]['title']
-			forecast = d['entries'][i]['description']
+			forecast = d['entries'][i+1]['description']
 			if(prefs[0] == "None"):
 				print forecast
 			else:	
