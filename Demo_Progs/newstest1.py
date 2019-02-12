@@ -3,6 +3,10 @@ import time
 import threading
 import os
 import smtplib, ssl
+import email
+import mimetypes
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from contextlib import contextmanager
 def newstest(feed, prefs, nums):
 	smtp_server = "smtp.gmail.com"
@@ -16,20 +20,25 @@ def newstest(feed, prefs, nums):
 	fin = int(nums[1])
 	d = feedparser.parse(feed)
 	hlines = [];
+	hlinks = [];
 	ohlines = [" "]*fin;
 	print("Feed title: " + d['feed']['title'])
 	timeelapsed = 0
 	while True:
-		hlines = []	
+		hlines = []
+		hlinks = []	
 		for i in range(start-1,fin):	
 			hline = d['entries'][i]['title']
+			hlink = d['entries'][i]['link']
 			if prefs[0] == "None":
 				hlines.append("Headline: " + hline)
+				hlinks.append(hlink)
 			else:
 				shline = hline.split()
 				data = search(prefs, shline)
 				if data != "None":
 					hlines.append("Headline: " + data)
+					hlinks.append(hlink)
 		if hlines != ohlines:
 			difflines = diff(hlines,ohlines)
 			for word in reversed(difflines):
@@ -38,13 +47,17 @@ def newstest(feed, prefs, nums):
 		time.sleep(5)
 		timeelapsed += 15;
 		if timeelapsed == 60:
-			message = """\
-			Subject: HI there
-
-			This message is sent from Python."""
+			
+			message = MIMEMultipart()
+			message['Subject'] = "feed links"
+			body = ""
+			for word in hlinks:
+				body += (word + "\n\n")
+			text = MIMEText(body)
+			message.attach(text) 
 			server = smtplib.SMTP_SSL(smtp_server, port)
 			server.login(sender_email, password)
-			server.sendmail(sender_email, sender_email, message)
+			server.sendmail(sender_email, sender_email, message.as_string())
 			server.close()
 		d = feedparser.parse(feed)
 
