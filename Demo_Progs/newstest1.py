@@ -2,7 +2,14 @@ import feedparser
 import time
 import threading
 import os
+import smtplib, ssl
+from contextlib import contextmanager
 def newstest(feed, prefs, nums):
+	smtp_server = "smtp.gmail.com"
+	use_ssl=True
+	port = 465
+	sender_email = "jakeperlalta99@gmail.com"
+	password = "YgKbEoGH325"
 	clear = lambda: os.system('clear');
 	clear();
 	start = int(nums[0])
@@ -10,7 +17,8 @@ def newstest(feed, prefs, nums):
 	d = feedparser.parse(feed)
 	hlines = [];
 	ohlines = [" "]*fin;
-	print "Feed title: " + d['feed']['title']
+	print("Feed title: " + d['feed']['title'])
+	timeelapsed = 0
 	while True:
 		hlines = []	
 		for i in range(start-1,fin):	
@@ -25,9 +33,19 @@ def newstest(feed, prefs, nums):
 		if hlines != ohlines:
 			difflines = diff(hlines,ohlines)
 			for word in reversed(difflines):
-				print word	
+				print(word)	
 			ohlines = hlines
-		time.sleep(15)
+		time.sleep(5)
+		timeelapsed += 15;
+		if timeelapsed == 60:
+			message = """\
+			Subject: HI there
+
+			This message is sent from Python."""
+			server = smtplib.SMTP_SSL(smtp_server, port)
+			server.login(sender_email, password)
+			server.sendmail(sender_email, sender_email, message)
+			server.close()
 		d = feedparser.parse(feed)
 
 def diff(hlines,ohlines):
@@ -45,19 +63,19 @@ def diff(hlines,ohlines):
 def weathertest(feed, prefs, days):
 	d = feedparser.parse(feed)
 	while True:
-		print "Today"
-		print d['entries'][0]['description']
+		print("Today")
+		print(d['entries'][0]['description'])
 		for i in range(0,2*days):
-			print d['entries'][i+1]['title']
+			print(d['entries'][i+1]['title'])
 			forecast = d['entries'][i+1]['description']
 			if(prefs[0] == "None"):
-				print forecast
+				print(forecast)
 			else:	
 				forecasts = forecast.split()
 				data = search(prefs, forecasts)
-				print data
+				print(data)
 				if (i+1)%2 == 0:
-					print "\n"
+					print("\n")
 		time.sleep(5)
 		clear = lambda: os.system('clear')
 		clear()
