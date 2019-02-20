@@ -9,6 +9,15 @@ import mimetypes
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from contextlib import contextmanager
+
+#args:
+#feed, the feed to be parsed.
+#prefs, the preferences for healines.
+#nums, the range of desired articles.
+#newstest() function takes in three parameters and loops through
+#the specified number of headlines. After a certain time interval,
+#an email is sent containing the currently found article headlines
+#and links.
 def newstest(feed, prefs, nums):
 	clear = lambda: os.system('clear');
 	clear();
@@ -23,7 +32,6 @@ def newstest(feed, prefs, nums):
 	while True:
 		hlines = []
 		hlinks = []	
-		titles = []
 		for i in range(start-1,fin):	
 			hline = d['entries'][i]['title']
 			hlink = d['entries'][i]['link']
@@ -40,13 +48,20 @@ def newstest(feed, prefs, nums):
 			difflines = diff(hlines,ohlines)
 			for word in reversed(difflines):
 				print(word)
-				titles.append(word)	
 			ohlines = hlines
 		time.sleep(5)
 		timeelapsed += 15;
+		#For the sake of the demo, an email is sent
+		#after 60 seconds. Could easily be changed.
 		if timeelapsed == 60:
 			email(hlinks,hlines)	
 		d = feedparser.parse(feed)
+#args:
+#hlinks, the list of article links.
+#hlines, the list of article titles.
+#email() function takes in 2 parameters and
+#sends an email containing the appropriate 
+#headline and link content.
 def email(hlinks,hlines):
 	smtp_server = "smtp.gmail.com"
 	use_ssl=True
@@ -56,10 +71,6 @@ def email(hlinks,hlines):
 	message = MIMEMultipart()
 	message['Subject'] = "feed links"
 	body = ""
-	#s = "\n"
-	#s = s.join(hlines)
-	#body = s.replace(u"\u2019","'")
-	#print(body)
 	for word1,word2 in zip(hlines,hlinks):
 		body += word1.replace(u"\u2019","'") + "\n" + word2 + "\n\n"
 	text = MIMEText(body)
@@ -96,7 +107,7 @@ def weathertest(feed, prefs, days):
 				if data == "None":
 					print("No"),
 					for word in prefs[:-1]:
-						print(word + ", ")
+						print(word + ", "),
 					print(prefs[-1])
 				else:
 					s = " "
@@ -109,23 +120,17 @@ def weathertest(feed, prefs, days):
 		clear()
 
 def search(prefs, line):	
-	#s = " "
-	#s = s.join(line)
-	#sall = []
-	#for p in prefs:
-	#	for sentence in s.split('.'):
-	#		if p in sentence:
-	#			sall.append(sentence)
-	#return sall
+	s = " "
+	s = s.join(line)
+	sall = []
+        for p in prefs:
+		for sentence in s.split('.'):
+			if p.lower() in sentence or p.capitalize() in sentence:
+				sall.append(sentence + ".")
+	if len(sall) == 0:
+		return "None"
+	return sall
 		
-			
-	for p in prefs:
-		for j, word in enumerate(line):
-			if ((p == "high") and (word == "high")) or ((p == "low") and (word == "low")):
-					return line[j] +  " " + line[j+1] + " " + line[j+2]
-			elif p in word:
-				return line
-	return "None"
 
 def ask():
 	type = raw_input("What type of feed do you want to run?: ")
