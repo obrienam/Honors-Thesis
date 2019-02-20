@@ -1,3 +1,4 @@
+#coding: utf-8
 import feedparser
 import time
 import threading
@@ -27,13 +28,13 @@ def newstest(feed, prefs, nums):
 			hline = d['entries'][i]['title']
 			hlink = d['entries'][i]['link']
 			if prefs[0] == "None":
-				hlines.append("Headline: " + hline)
+				hlines.append(hline)
 				hlinks.append(hlink)
 			else:
 				shline = hline.split()
 				data = search(prefs, shline)
 				if data != "None":
-					hlines.append("Headline: " + data)
+					hlines.append(data)
 					hlinks.append(hlink)
 		if hlines != ohlines:
 			difflines = diff(hlines,ohlines)
@@ -44,7 +45,7 @@ def newstest(feed, prefs, nums):
 		time.sleep(5)
 		timeelapsed += 15;
 		if timeelapsed == 60:
-			email(hlinks,titles)	
+			email(hlinks,hlines)	
 		d = feedparser.parse(feed)
 def email(hlinks,hlines):
 	smtp_server = "smtp.gmail.com"
@@ -55,8 +56,12 @@ def email(hlinks,hlines):
 	message = MIMEMultipart()
 	message['Subject'] = "feed links"
 	body = ""
-	for word in hlinks:
-		body += (word + "\n\n")
+	#s = "\n"
+	#s = s.join(hlines)
+	#body = s.replace(u"\u2019","'")
+	#print(body)
+	for word1,word2 in zip(hlines,hlinks):
+		body += word1.replace(u"\u2019","'") + "\n" + word2 + "\n\n"
 	text = MIMEText(body)
 	message.attach(text) 
 	server = smtplib.SMTP_SSL(smtp_server, port)
@@ -104,22 +109,22 @@ def weathertest(feed, prefs, days):
 		clear()
 
 def search(prefs, line):	
-	s = " "
-	s = s.join(line)
-	sall = []
-	for p in prefs:
-		for sentence in s.split('.'):
-			if p in sentence:
-				sall.append(sentence)
-	return sall
+	#s = " "
+	#s = s.join(line)
+	#sall = []
+	#for p in prefs:
+	#	for sentence in s.split('.'):
+	#		if p in sentence:
+	#			sall.append(sentence)
+	#return sall
 		
 			
-	#for p in prefs:
-	#	for j, word in enumerate(line):
-	#		if ((p == "high") and (word == "high")) or ((p == "low") and (word == "low")):
-	#				return line[j] +  " " + line[j+1] + " " + line[j+2]
-	#		elif p in word:
-	#			return line
+	for p in prefs:
+		for j, word in enumerate(line):
+			if ((p == "high") and (word == "high")) or ((p == "low") and (word == "low")):
+					return line[j] +  " " + line[j+1] + " " + line[j+2]
+			elif p in word:
+				return line
 	return "None"
 
 def ask():
