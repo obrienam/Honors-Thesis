@@ -132,21 +132,28 @@ def search(prefs, line):
 	return sall
 		
 
-def ask():
-	type = raw_input("What type of feed do you want to run?: ")
-	feed = raw_input("Please enter a feed url: ")
-	if(type == "news"):
-		num = raw_input("Please enter the range of entries: ")
-		nums = num.split(" ")
-		pref = raw_input("Please enter any headline preferences: ")
-		prefs = pref.split(" ")
-		newstest(feed, prefs, nums)
-	if(type == "weather"):
-		days = raw_input("Please enter the number of days for the forecast: ")
-		pref = raw_input("Please enter any data prefences (separated by a space): ")
-		prefs = pref.split(" ")
-		weathertest(feed, prefs, int(days))
-	return
+def run():
+	types = "init"
+	feed = "init"
+	prefs = "init"
+	num = 0
+	with open("preferences.txt") as fp:
+		line = "init"
+		while line:
+			line = fp.readline()
+			if(line	== "Feed Type:"):
+				types = fp.readline()
+			if(line	== "URL:"):
+				feed = fp.readline()
+			if(line	== "Number of entries:"):
+				prefs = fp.readline()
+			if(line	== "Content Preferences:"):
+				num = fp.readline()
+	if(types == "News"):
+		newstest(feed,prefs,num)
+	if(types == "Weather"):
+		newstest(feed,prefs,num)
 
-ask()
+			
+run()
 	

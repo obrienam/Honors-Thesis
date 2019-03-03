@@ -1,0 +1,9 @@
+Feed Type:
+Weather
+URL:
+https://www.rssweather.com/zipcode/38607/rss.php
+Number of entries:
+5
+Content Preferences:
+high
+low
