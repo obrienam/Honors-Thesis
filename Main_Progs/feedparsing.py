@@ -18,21 +18,19 @@ from contextlib import contextmanager
 #the specified number of headlines. After a certain time interval,
 #an email is sent containing the currently found article headlines
 #and links.
-def newstest(feed, prefs, nums):
+def newstest(feed, prefs, num):
 	clear = lambda: os.system('clear');
 	clear();
-	start = int(nums[0])
-	fin = int(nums[1])
 	d = feedparser.parse(feed)
 	hlines = [];
 	hlinks = [];
-	ohlines = [" "]*fin;
+	ohlines = [" "]*num;
 	print("Feed title: " + d['feed']['title'])
 	timeelapsed = 0
 	while True:
 		hlines = []
 		hlinks = []	
-		for i in range(start-1,fin):	
+		for i in range(0,num):	
 			hline = d['entries'][i]['title']
 			hlink = d['entries'][i]['link']
 			if prefs[0] == "None":
@@ -135,25 +133,28 @@ def search(prefs, line):
 def run():
 	types = "init"
 	feed = "init"
-	prefs = "init"
+	prefs = []
 	num = 0
 	with open("preferences.txt") as fp:
 		line = "init"
 		while line:
 			line = fp.readline()
-			if(line	== "Feed Type:"):
-				types = fp.readline()
-			if(line	== "URL:"):
-				feed = fp.readline()
-			if(line	== "Number of entries:"):
-				prefs = fp.readline()
-			if(line	== "Content Preferences:"):
-				num = fp.readline()
-	if(types == "News"):
-		newstest(feed,prefs,num)
-	if(types == "Weather"):
-		newstest(feed,prefs,num)
+			if(line	== "Feed Type:\n"):
+				types = fp.readline().rstrip()
+			if(line	== "URL:\n"):
+				feed = fp.readline().rstrip()
+			if(line	== "Number of entries:\n"):
+				num = fp.readline().rstrip()
+			if(line	== "Content Preferences:\n"):
+				prefs.append(fp.readline().rstrip())
+				prefs.append(fp.readline().rstrip())
 
+	if(types == "News"):
+		newstest(feed,prefs,int(num))
+        elif(types == "Weather"):
+		weathertest(feed,prefs,int(num))
+	else:
+		print(prefs)
 			
 run()
 	
