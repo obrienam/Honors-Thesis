@@ -9,6 +9,8 @@ import mimetypes
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from contextlib import contextmanager
+import buttonshim
+import signal
 
 #args:
 #feed, the feed to be parsed.
@@ -38,9 +40,9 @@ def newstest(feed, prefs, num):
 				hlinks.append(hlink)
 			else:
 				shline = hline.split()
-				data = search(prefs, shline)
+				data = newssearch(prefs, shline)
 				if data != "None":
-					hlines.append(data)
+					hlines.append(hline)
 					hlinks.append(hlink)
 		if hlines != ohlines:
 			difflines = diff(hlines,ohlines)
@@ -87,7 +89,14 @@ def diff(hlines,ohlines):
 				break
 		if found == False:
 			difflines.append(hlines[i]);
-	return difflines	
+	return difflines
+	
+def newssearch(prefs, line):
+	for p in prefs:
+		for j, word in enumerate(line):
+			if p in word:
+				return line
+	return "None"
 
 def weathertest(feed, prefs, days):
 	d = feedparser.parse(feed)
@@ -101,7 +110,7 @@ def weathertest(feed, prefs, days):
 				print(forecast)
 			else:	
 				forecasts = forecast.split()
-				data = search(prefs, forecasts)
+				data = weathersearch(prefs, forecasts)
 				if data == "None":
 					print("No"),
 					for word in prefs[:-1]:
@@ -117,7 +126,7 @@ def weathertest(feed, prefs, days):
 		clear = lambda: os.system('clear')
 		clear()
 
-def search(prefs, line):	
+def weathersearch(prefs, line):	
 	s = " "
 	s = s.join(line)
 	sall = []
@@ -129,13 +138,14 @@ def search(prefs, line):
 		return "None"
 	return sall
 		
-
-def run():
+def readf(i):
 	types = "init"
 	feed = "init"
 	prefs = []
 	num = 0
 	with open("preferences.txt") as fp:
+		for j in range(0,i):
+			fp.readline()
 		line = "init"
 		while line:
 			line = fp.readline()
@@ -144,17 +154,22 @@ def run():
 			if(line	== "URL:\n"):
 				feed = fp.readline().rstrip()
 			if(line	== "Number of entries:\n"):
-				num = fp.readline().rstrip()
+				num = int(fp.readline().rstrip())
 			if(line	== "Content Preferences:\n"):
-				prefs.append(fp.readline().rstrip())
-				prefs.append(fp.readline().rstrip())
-
-	if(types == "News"):
-		newstest(feed,prefs,int(num))
-        elif(types == "Weather"):
-		weathertest(feed,prefs,int(num))
-	else:
-		print(prefs)
-			
-run()
-	
+				prefs = fp.readline().split()
+				if(types == "News"):
+					newstest(feed,prefs,num)	
+@buttonshim.on_press(buttonshim.BUTTON_A)
+def button_a(button, pressed):
+	readf(0)
+@buttonshim.on_press(buttonshim.BUTTON_B)
+def button_b(button, pressed):
+	readf(8)
+@buttonshim.on_press(buttonshim.BUTTON_C)
+def button_c(button, pressed):
+	readf(16)
+@buttonshim.on_press(buttonshim.BUTTON_D)
+def button_d(button, pressed):
+	readf(24)
+signal.pause()
+		

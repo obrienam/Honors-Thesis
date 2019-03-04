@@ -1,3 +1,5 @@
+import os.path
+from pathlib2 import Path
 def gatherinfo():
 	type = raw_input("Please enter a type of feed (type \"e\" for examples): ")
 	if(type == "e"):
@@ -27,16 +29,24 @@ def gatherinfo():
 		prefs = pref.split(" ")
 		return type,feed,days,prefs
 def parsefile(type,feed,num,prefs):
-	f = open("preferences.txt", "w+")
+	infile = Path("preferences.txt")
+	if infile.exists():
+		f = open("preferences.txt", "a")
+	else:
+		f = open("preferences.txt", "w+")
 	f.write("Feed Type:\n%s\n" % type)
 	f.write("URL:\n%s\n" % feed)
 	f.write("Number of entries:\n%s\n" % num)
 	f.write("Content Preferences:\n")
 	for pref in prefs:
-		f.write("%s\n" % pref)
+		f.write("%s " % pref)
+	f.write("\n")
 	f.close()	
 	
 def run():
-	type,feed,num,prefs = gatherinfo()
-	parsefile(type,feed,num,prefs)	
+	i = 0
+	while (i<4):
+		type,feed,num,prefs = gatherinfo()
+		parsefile(type,feed,num,prefs)	
+		i+=1
 run()	
