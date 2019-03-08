@@ -17,7 +17,13 @@ def gatherinfo():
 		num = raw_input("Please enter the number of desired articles: ")
 		pref = raw_input("Please enter any headline keywords(Each separated by a space): ")
 		prefs = pref.split(" ")
-		return type,feed,num,prefs
+		ansemail = raw_input("Would you like to have articles sent to your email address? (Type y or n): ")
+		time = "None"
+		sendTo = "None"
+		if(ansemail == "y"):
+			time = raw_input("Please enter the time you want to receive the email (HH:MM): ")
+			sendTo = raw_input("Please enter your email address: ")
+		return type,feed,num,prefs,time,sendTo
 	if(type == "Weather"):
 		feed = raw_input("Please enter a feed url (type \"e\" for examples): ")
 		if(feed == "e"):
@@ -27,8 +33,10 @@ def gatherinfo():
 		days = raw_input("Please enter the number of days for the forecast: ")
 		pref = raw_input("Please enter any weather preferences (Each separated by a space): ")
 		prefs = pref.split(" ")
-		return type,feed,days,prefs
-def parsefile(type,feed,num,prefs):
+		time = "None"
+		sendTo = "None"
+		return type,feed,days,prefs,time,sendTo
+def parsefile(type,feed,num,prefs,time,sendTo):
 	infile = Path("preferences.txt")
 	if infile.exists():
 		f = open("preferences.txt", "a")
@@ -41,12 +49,14 @@ def parsefile(type,feed,num,prefs):
 	for pref in prefs:
 		f.write("%s " % pref)
 	f.write("\n")
+	f.write("Time:\n%s\n" % time)
+	f.write("SendTo:\n%s\n" % sendTo)
 	f.close()	
 	
 def run():
 	i = 0
 	while (i<4):
-		type,feed,num,prefs = gatherinfo()
-		parsefile(type,feed,num,prefs)	
+		type,feed,num,prefs,time,sendTo = gatherinfo()
+		parsefile(type,feed,num,prefs,time,sendTo)	
 		i+=1
 run()	
