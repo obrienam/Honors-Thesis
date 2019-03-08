@@ -1,0 +1,48 @@
+Feed Type:
+News
+URL:
+https://www.apple.com/newsroom/rss-feed.rss
+Number of entries:
+5
+Content Preferences:
+Apple 
+Time:
+6:01
+SendTo:
+aidanobrien15@gmail.com
+Feed Type:
+Weather
+URL:
+https://www.rssweather.com/zipcode/28607/rss.php
+Number of entries:
+5
+Content Preferences:
+high low 
+Time:
+None
+SendTo:
+None
+Feed Type:
+News
+URL:
+https://www.reddit.com/r/news/.rss
+Number of entries:
+5
+Content Preferences:
+None 
+Time:
+5:57
+SendTo:
+aidanobrien15@gmail.com
+Feed Type:
+Weather
+URL:
+https://www.rssweather.com/zipcode/28210/rss.php
+Number of entries:
+5
+Content Preferences:
+high low 
+Time:
+None
+SendTo:
+None

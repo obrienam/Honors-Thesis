@@ -11,6 +11,7 @@ from email.mime.text import MIMEText
 from contextlib import contextmanager
 import buttonshim
 import signal
+import datetime
 
 #args:
 #feed, the feed to be parsed.
@@ -20,7 +21,8 @@ import signal
 #the specified number of headlines. After a certain time interval,
 #an email is sent containing the currently found article headlines
 #and links.
-def newstest(feed, prefs, num):
+def newstest(feed, prefs, num, stime, sendTo):
+	done = False
 	clear = lambda: os.system('clear');
 	clear();
 	d = feedparser.parse(feed)
@@ -28,7 +30,6 @@ def newstest(feed, prefs, num):
 	hlinks = [];
 	ohlines = [" "]*num;
 	print("Feed title: " + d['feed']['title'])
-	timeelapsed = 0
 	while True:
 		hlines = []
 		hlinks = []	
@@ -50,11 +51,13 @@ def newstest(feed, prefs, num):
 				print(word)
 			ohlines = hlines
 		time.sleep(5)
-		timeelapsed += 15;
-		#For the sake of the demo, an email is sent
-		#after 60 seconds. Could easily be changed.
-		if timeelapsed == 60:
-			email(hlinks,hlines)	
+		ntime = datetime.datetime.now()
+		hour = ntime.hour
+		if(ntime.hour > 12):
+			hour = hour - 12
+		if(stime[0] ==  hour and stime[1] == ntime.minute and done == False):
+			done = True
+			email(hlinks,hlines,sendTo)
 		d = feedparser.parse(feed)
 #args:
 #hlinks, the list of article links.
@@ -62,14 +65,14 @@ def newstest(feed, prefs, num):
 #email() function takes in 2 parameters and
 #sends an email containing the appropriate 
 #headline and link content.
-def email(hlinks,hlines):
+def email(hlinks,hlines,sendTo):
 	smtp_server = "smtp.gmail.com"
 	use_ssl=True
 	port = 465
 	sender_email = "jakeperlalta99@gmail.com"
 	password = "YgKbEoGH325"
 	message = MIMEMultipart()
-	message['Subject'] = "feed links"
+	message['Subject'] = "Feed Articles"
 	body = ""
 	for word1,word2 in zip(hlines,hlinks):
 		body += word1.replace(u"\u2019","'") + "\n" + word2 + "\n\n"
@@ -77,7 +80,7 @@ def email(hlinks,hlines):
 	message.attach(text) 
 	server = smtplib.SMTP_SSL(smtp_server, port)
 	server.login(sender_email, password)
-	server.sendmail(sender_email, sender_email, message.as_string())
+	server.sendmail(sender_email, sendTo, message.as_string())
 	server.close()
 def diff(hlines,ohlines):
 	difflines = []
@@ -143,6 +146,8 @@ def readf(i):
 	feed = "init"
 	prefs = []
 	num = 0
+	time = [0]*2
+	sendTo = "None"
 	with open("preferences.txt") as fp:
 		for j in range(0,i):
 			fp.readline()
@@ -157,19 +162,27 @@ def readf(i):
 				num = int(fp.readline().rstrip())
 			if(line	== "Content Preferences:\n"):
 				prefs = fp.readline().split()
+			if(line == "Time:\n"):
+				times = fp.readline().split(':')
+				time[0] = int(times[0])
+				time[1] = int(times[1])
+			if(line == "SendTo:\n"):
+				sendTo = fp.readline().rstrip()
 				if(types == "News"):
-					newstest(feed,prefs,num)	
+					newstest(feed,prefs,num,time,sendTo)
+				if(types == "Weather"):
+					weathertest(feed,prefs,num)	
 @buttonshim.on_press(buttonshim.BUTTON_A)
 def button_a(button, pressed):
 	readf(0)
 @buttonshim.on_press(buttonshim.BUTTON_B)
 def button_b(button, pressed):
-	readf(8)
+	readf(12)
 @buttonshim.on_press(buttonshim.BUTTON_C)
 def button_c(button, pressed):
-	readf(16)
+	readf(24)
 @buttonshim.on_press(buttonshim.BUTTON_D)
 def button_d(button, pressed):
-	readf(24)
+	readf(36)
 signal.pause()
 		
