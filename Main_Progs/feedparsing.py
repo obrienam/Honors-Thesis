@@ -164,8 +164,9 @@ def readf(i):
 				prefs = fp.readline().split()
 			if(line == "Time:\n"):
 				times = fp.readline().split(':')
-				time[0] = int(times[0])
-				time[1] = int(times[1])
+				if(times[0] != "None\n"):
+					time[0] = int(times[0])
+					time[1] = int(times[1])
 			if(line == "SendTo:\n"):
 				sendTo = fp.readline().rstrip()
 				if(types == "News"):
