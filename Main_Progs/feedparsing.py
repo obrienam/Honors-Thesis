@@ -12,7 +12,6 @@ from contextlib import contextmanager
 import buttonshim
 import signal
 import datetime
-
 #args:
 #feed, the feed to be parsed.
 #prefs, the preferences for healines.
@@ -21,8 +20,7 @@ import datetime
 #the specified number of headlines. After a certain time interval,
 #an email is sent containing the currently found article headlines
 #and links.
-def newstest(feed, prefs, num, stime, sendTo):
-	done = False
+def newsParse(feed, prefs, num, stime, sendTo, press):
 	clear = lambda: os.system('clear');
 	clear();
 	d = feedparser.parse(feed)
@@ -50,15 +48,17 @@ def newstest(feed, prefs, num, stime, sendTo):
 			for word in reversed(difflines):
 				print(word)
 			ohlines = hlines
+		#print(press)
 		time.sleep(5)
 		ntime = datetime.datetime.now()
 		hour = ntime.hour
 		if(ntime.hour > 12):
 			hour = hour - 12
-		if(stime[0] ==  hour and stime[1] == ntime.minute and done == False):
-			done = True
+		if(stime[0] ==  hour and stime[1] == ntime.minute and press == 1):
+			press = 10
 			email(hlinks,hlines,sendTo)
 		d = feedparser.parse(feed)
+
 #args:
 #hlinks, the list of article links.
 #hlines, the list of article titles.
@@ -82,6 +82,7 @@ def email(hlinks,hlines,sendTo):
 	server.login(sender_email, password)
 	server.sendmail(sender_email, sendTo, message.as_string())
 	server.close()
+
 def diff(hlines,ohlines):
 	difflines = []
 	found = False
@@ -101,34 +102,40 @@ def newssearch(prefs, line):
 				return line
 	return "None"
 
-def weathertest(feed, prefs, days):
+def weatherParse(feed, prefs, days):
+	clear = lambda: os.system('clear');
+	clear();
 	d = feedparser.parse(feed)
+	fcast = []
+	ofcast = [] * 2*days
 	while True:
-		print("Today")
-		print(d['entries'][0]['description'])
+		fcast = []
+		fcast.append("Current weather:")
+		fcast.append((d['entries'][0]['description']))
 		for i in range(0,2*days):
-			print(d['entries'][i+1]['title'])
+			fcast.append((d['entries'][i+1]['title']))
 			forecast = d['entries'][i+1]['description']
 			if(prefs[0] == "None"):
-				print(forecast)
+				fcast.append(forecast)
 			else:	
 				forecasts = forecast.split()
 				data = weathersearch(prefs, forecasts)
 				if data == "None":
 					print("No"),
 					for word in prefs[:-1]:
-						print(word + ", "),
-					print(prefs[-1])
+						fcast.append(word + ", ")
+					fcast.append(prefs[-1])
 				else:
 					s = " "
 					s = s.join(data)
-					print(s)
-				if (i+1)%2 == 0:
-					print("\n")
+					fcast.append(s)
+		if fcast != ofcast:
+			#difflines = diff(fcast, ofcast)
+			for word in (fcast):
+				print(word) + "\n"
+			ofcast = fcast			
 		time.sleep(5)
-		clear = lambda: os.system('clear')
-		clear()
-
+		d = feedparser.parse(feed)
 def weathersearch(prefs, line):	
 	s = " "
 	s = s.join(line)
@@ -141,7 +148,7 @@ def weathersearch(prefs, line):
 		return "None"
 	return sall
 		
-def readf(i):
+def readf(i,press):
 	types = "init"
 	feed = "init"
 	prefs = []
@@ -170,20 +177,37 @@ def readf(i):
 			if(line == "SendTo:\n"):
 				sendTo = fp.readline().rstrip()
 				if(types == "News"):
-					newstest(feed,prefs,num,time,sendTo)
+					newsParse(feed,prefs,num,time,sendTo,press)
 				if(types == "Weather"):
-					weathertest(feed,prefs,num)	
+					weatherParse(feed,prefs,num)	
+
+Apress = 0
+Bpress = 0
+Cpress = 0
+Dpress = 0
+
 @buttonshim.on_press(buttonshim.BUTTON_A)
 def button_a(button, pressed):
-	readf(0)
+	global Apress
+	Apress += 1
+	readf(0,Apress)
+
 @buttonshim.on_press(buttonshim.BUTTON_B)
 def button_b(button, pressed):
-	readf(12)
+	global Bpress
+	Bpress += 1 
+	readf(12,Bpress)
+
 @buttonshim.on_press(buttonshim.BUTTON_C)
 def button_c(button, pressed):
-	readf(24)
+	global Cpress
+	Cpress += 1
+	readf(24,Cpress)
+
 @buttonshim.on_press(buttonshim.BUTTON_D)
 def button_d(button, pressed):
-	readf(36)
+	global Dpress
+	Dpress += 1
+	readf(36,Dpress)
 signal.pause()
 		
