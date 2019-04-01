@@ -25,7 +25,7 @@ from threading import Thread, Lock
 #stime: the time when the feed email should be sent (if desired).
 #sendTo: the address to send the feed email to (if desired).
 #press: the number of times this button has been pressed.
-def newsParse(feed, prefs, num, stime, sendTo, press):
+def newsParse(feed, prefs, num, stime, sendTo, press,mutex):
 	#clear the console
 	clear = lambda: os.system('clear');
 	clear();
@@ -38,51 +38,51 @@ def newsParse(feed, prefs, num, stime, sendTo, press):
 	print("Feed title: " + d['feed']['title'])
 	#loop forever, parsing the current feed content
 	while True:
-		#mutex.acquire()
-		hlines = []
-		hlinks = []	
-		#get the headlines and links,
-		#using the specified filters
-		#(if there are any).
-		for i in range(0,num):	
-			hline = d['entries'][i]['title']
-			hlink = d['entries'][i]['link']
-			if prefs[0] == "None":
-				hlines.append(hline)
-				hlinks.append(hlink)
-			else:
-				shline = hline.split()
-				data = newssearch(prefs, shline)
-				if data != "None":
+		if(mutex.locked()==False):
+			hlines = []
+			hlinks = []	
+			#get the headlines and links,
+			#using the specified filters
+			#(if there are any).
+			for i in range(0,num):	
+				hline = d['entries'][i]['title']
+				hlink = d['entries'][i]['link']
+				if prefs[0] == "None":
 					hlines.append(hline)
 					hlinks.append(hlink)
-		#print out any headlines
-		#that were not part of the
-		#previous iteration (print all 
-		#if it is the first iteration).
-		if hlines != ohlines:
-			difflines = diff(hlines,ohlines)
-			for word in reversed(difflines):
-				print(word)
-			ohlines = hlines
-		#wait 5 seconds
-		time.sleep(5)
-		#check the current time. if 
-		#it matches the time parameter,
-		#and this is the first time
-		#this button has been pressed,
-		#send an email with the feed
-		#information
-		ntime = datetime.datetime.now()
-		hour = ntime.hour
-		if(ntime.hour > 12):
-				hour = hour - 12
-		if(stime[0] ==  hour and stime[1] == ntime.minute and press == 1):
-			press = 10
-			email(hlinks,hlines,sendTo)
-		#update the feed dictionary
-		#for the next iteration
-		d = feedparser.parse(feed)
+				else:
+					shline = hline.split()
+					data = newssearch(prefs, shline)
+					if data != "None":
+						hlines.append(hline)
+						hlinks.append(hlink)
+			#print out any headlines
+			#that were not part of the
+			#previous iteration (print all 
+			#if it is the first iteration).
+			if hlines != ohlines:
+				difflines = diff(hlines,ohlines)
+				for word in reversed(difflines):
+					print(word)
+				ohlines = hlines
+			#wait 5 seconds
+			time.sleep(5)
+			#check the current time. if 
+			#it matches the time parameter,
+			#and this is the first time
+			#this button has been pressed,
+			#send an email with the feed
+			#information
+			ntime = datetime.datetime.now()
+			hour = ntime.hour
+			if(ntime.hour > 12):
+					hour = hour - 12
+			if(stime[0] ==  hour and stime[1] == ntime.minute and press == 1):
+				press = 10
+				email(hlinks,hlines,sendTo)
+			#update the feed dictionary
+			#for the next iteration
+			d = feedparser.parse(feed)
 
 
 #email() function takes in 3 parameters and
@@ -158,7 +158,7 @@ def newssearch(prefs, line):
 #by the user
 #days: the number of days to include in the 
 #forecast
-def weatherParse(feed, prefs,days):
+def weatherParse(feed, prefs,days,mutex):
 	#clear the console
 	clear = lambda: os.system('clear');
 	clear();
@@ -169,7 +169,7 @@ def weatherParse(feed, prefs,days):
 	#loop forever, parsing the 
 	#current weather data.
 	while True:
-		#mutex.acquire()
+		mutex.acquire()
 		#Clear list of data from
 		#previous iteration.
 		fcast = []
@@ -236,7 +236,7 @@ def weathersearch(prefs, line):
 #i: starting line number.
 #press: the number of times the button 
 #has been pressed.
-def readf(i,press):
+def readf(i,press,mutex):
 	types = "init"
 	feed = "init"
 	prefs = []
@@ -265,9 +265,9 @@ def readf(i,press):
 			if(line == "SendTo:\n"):
 				sendTo = fp.readline().rstrip()
 				if(types == "News"):
-					newsParse(feed,prefs,num,time,sendTo,press)
+					newsParse(feed,prefs,num,time,sendTo,press,mutex)
 				if(types == "Weather"):
-					weatherParse(feed,prefs,num)	
+					weatherParse(feed,prefs,num,mutex)	
 
 #global variables for the number of times 
 #each button has been pressed
@@ -291,9 +291,12 @@ mutex4 = Lock();
 def button_a(button, pressed):
 	global Apress
 	Apress += 1
-	#mutex1.acquire(False)
-	#mutex1.release()
-	readf(0,Apress)
+	mutex1.acquire(False)
+	mutex1.release()
+	mutex2.acquire(False)
+	mutex3.acquire(False)
+	mutex4.acquire(False)
+	readf(0,Apress,mutex1)
 
 #function to detect when button a is pressed.
 #increment the button variable and then call
@@ -301,14 +304,18 @@ def button_a(button, pressed):
 #line number and button variable value.
 #parameters
 #button:the button that was pressed.
-#pressed:the action that was preformed on the button.@buttonshim.on_press(buttonshim.BUTTON_B)
+#pressed:the action that was preformed on the button.
+@buttonshim.on_press(buttonshim.BUTTON_B)
 def button_b(button, pressed):
 	print("blah")
 	global Bpress
 	Bpress += 1
-	#mutex2.acquire(False); 
-	#mutex2.release()
-	readf(12,Bpress)
+	mutex1.acquire(False)
+	mutex2.acquire(False)
+	mutex2.release()
+	mutex3.acquire(False)
+	mutex4.acquire(False)
+	readf(12,Bpress,mutex2)
 
 #function to detect when button a is pressed.
 #increment the button variable and then call
@@ -316,12 +323,17 @@ def button_b(button, pressed):
 #line number and button variable value.
 #parameters
 #button:the button that was pressed.
-#pressed:the action that was preformed on the button.@buttonshim.on_press(buttonshim.BUTTON_C)
+#pressed:the action that was preformed on the button.
+@buttonshim.on_press(buttonshim.BUTTON_C)
 def button_c(button, pressed):
 	global Cpress
 	Cpress += 1
-	#mutex3.release()
-	readf(24,Cpress)
+	mutex3.acquire(False)
+	mutex3.release()
+	mutex2 = Lock()
+	mutex1 = Lock()
+	mutex4 = Lock()
+	readf(24,Cpress,mutex3)
 
 #function to detect when button a is pressed.
 #increment the button variable and then call
@@ -334,9 +346,12 @@ def button_c(button, pressed):
 def button_d(button, pressed):
 	global Dpress
 	Dpress += 1
-	#mutex4.acquire(False)
-	#mutex4.release()
-	readf(36,Dpress)
+	mutex4.acquire(False)
+	mutex4.release()
+	mutex1 = Lock()
+	mutex2 = Lock()
+	mutex3 = Lock()
+	readf(36,Dpress,mutex4)
 
 #wait initially for the first button to be pressed
 signal.pause()
