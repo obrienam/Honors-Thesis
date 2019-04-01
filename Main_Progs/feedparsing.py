@@ -12,6 +12,7 @@ from contextlib import contextmanager
 import buttonshim
 import signal
 import datetime
+from threading import Thread, Lock
 
 #newstest() function takes in three parameters and loops through
 #the specified number of headlines. After a certain time interval,
@@ -37,6 +38,7 @@ def newsParse(feed, prefs, num, stime, sendTo, press):
 	print("Feed title: " + d['feed']['title'])
 	#loop forever, parsing the current feed content
 	while True:
+		#mutex.acquire()
 		hlines = []
 		hlinks = []	
 		#get the headlines and links,
@@ -74,7 +76,7 @@ def newsParse(feed, prefs, num, stime, sendTo, press):
 		ntime = datetime.datetime.now()
 		hour = ntime.hour
 		if(ntime.hour > 12):
-			hour = hour - 12
+				hour = hour - 12
 		if(stime[0] ==  hour and stime[1] == ntime.minute and press == 1):
 			press = 10
 			email(hlinks,hlines,sendTo)
@@ -156,7 +158,7 @@ def newssearch(prefs, line):
 #by the user
 #days: the number of days to include in the 
 #forecast
-def weatherParse(feed, prefs, days):
+def weatherParse(feed, prefs,days):
 	#clear the console
 	clear = lambda: os.system('clear');
 	clear();
@@ -167,6 +169,7 @@ def weatherParse(feed, prefs, days):
 	#loop forever, parsing the 
 	#current weather data.
 	while True:
+		#mutex.acquire()
 		#Clear list of data from
 		#previous iteration.
 		fcast = []
@@ -205,7 +208,7 @@ def weatherParse(feed, prefs, days):
 		#sleep five seconds, update feed dictionary
 		time.sleep(5)
 		d = feedparser.parse(feed)
-		
+	
 #search through the forecast(line)
 #for the words specified in prefs. 
 #return the parts of the sentence
@@ -273,6 +276,10 @@ Bpress = 0
 Cpress = 0
 Dpress = 0
 
+mutex1 = Lock();
+mutex2 = Lock();
+mutex3 = Lock();
+mutex4 = Lock();
 #function to detect when button a is pressed.
 #increment the button variable and then call
 #readf function with the appropriate starting 
@@ -284,6 +291,8 @@ Dpress = 0
 def button_a(button, pressed):
 	global Apress
 	Apress += 1
+	#mutex1.acquire(False)
+	#mutex1.release()
 	readf(0,Apress)
 
 #function to detect when button a is pressed.
@@ -294,8 +303,11 @@ def button_a(button, pressed):
 #button:the button that was pressed.
 #pressed:the action that was preformed on the button.@buttonshim.on_press(buttonshim.BUTTON_B)
 def button_b(button, pressed):
+	print("blah")
 	global Bpress
-	Bpress += 1 
+	Bpress += 1
+	#mutex2.acquire(False); 
+	#mutex2.release()
 	readf(12,Bpress)
 
 #function to detect when button a is pressed.
@@ -308,6 +320,7 @@ def button_b(button, pressed):
 def button_c(button, pressed):
 	global Cpress
 	Cpress += 1
+	#mutex3.release()
 	readf(24,Cpress)
 
 #function to detect when button a is pressed.
@@ -321,6 +334,8 @@ def button_c(button, pressed):
 def button_d(button, pressed):
 	global Dpress
 	Dpress += 1
+	#mutex4.acquire(False)
+	#mutex4.release()
 	readf(36,Dpress)
 
 #wait initially for the first button to be pressed
