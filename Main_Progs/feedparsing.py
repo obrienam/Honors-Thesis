@@ -38,7 +38,7 @@ def newsParse(feed, prefs, num, stime, sendTo, press,mutex):
 	print("Feed title: " + d['feed']['title'])
 	#loop forever, parsing the current feed content
 	while True:
-		if(True):
+		if(mutex.locked() == False):
 			hlines = []
 			hlinks = []	
 			#get the headlines and links,
@@ -169,45 +169,45 @@ def weatherParse(feed, prefs,days,mutex):
 	#loop forever, parsing the 
 	#current weather data.
 	while True:
-		#mutex.acquire()
-		#Clear list of data from
-		#previous iteration.
-		fcast = []
-		#Append the current weather
-		fcast.append("Current weather:")
-		fcast.append((d['entries'][0]['description']))
-		#loop through the appropriate number of days
-		for i in range(0,2*days):
-			fcast.append((d['entries'][i+1]['title']))
-			forecast = d['entries'][i+1]['description']
-			#if there are no preferences, append the forecast.
-			#if there are, only append the relevant parts of the 
-			#forecast.
-			if(prefs[0] == "None"):
-				fcast.append(forecast)
-			else:	
-				forecasts = forecast.split()
-				data = weathersearch(prefs, forecasts)
-				if data == "None":
-					print("No"),
-					for word in prefs[:-1]:
-						fcast.append(word + ", ")
-					fcast.append(prefs[-1])
-				else:
-					s = " "
-					s = s.join(data)
-					fcast.append(s)
+		if(mutex.locked() == False):
+			#Clear list of data from
+			#previous iteration.
+			fcast = []
+			#Append the current weather
+			fcast.append("Current weather:")
+			fcast.append((d['entries'][0]['description']))
+			#loop through the appropriate number of days
+			for i in range(0,2*days):
+				fcast.append((d['entries'][i+1]['title']))
+				forecast = d['entries'][i+1]['description']
+				#if there are no preferences, append the forecast.
+				#if there are, only append the relevant parts of the 
+				#forecast.
+				if(prefs[0] == "None"):
+					fcast.append(forecast)
+				else:	
+					forecasts = forecast.split()
+					data = weathersearch(prefs, forecasts)
+					if data == "None":
+						print("No"),
+						for word in prefs[:-1]:
+							fcast.append(word + ", ")
+						fcast.append(prefs[-1])
+					else:
+						s = " "
+						s = s.join(data)
+						fcast.append(s)
 		
-		#if the forecast of this iteration
-		#is different than the last, print
-		#out the new forecast
-		if fcast != ofcast:
-			for word in (fcast):
-				print(word) + "\n"
-			ofcast = fcast
-		#sleep five seconds, update feed dictionary
-		time.sleep(5)
-		d = feedparser.parse(feed)
+				#if the forecast of this iteration
+				#is different than the last, print
+				#out the new forecast
+				if fcast != ofcast:
+					for word in (fcast):
+						print(word) + "\n"
+					ofcast = fcast
+				#sleep five seconds, update feed dictionary
+				time.sleep(5)
+				d = feedparser.parse(feed)
 	
 #search through the forecast(line)
 #for the words specified in prefs. 
@@ -291,11 +291,11 @@ mutex4 = Lock();
 def button_a(button, pressed):
 	global Apress
 	Apress += 1
-	#mutex1.acquire(False)
-	#mutex1.release()
-	#mutex2.acquire(False)
-	#mutex3.acquire(False)
-	#mutex4.acquire(False)
+	if(mutex1.locked() == True):
+		mutex1.release()
+	mutex2.acquire(False)
+	mutex3.acquire(False)
+	mutex4.acquire(False)
 	readf(0,Apress,mutex1)
 
 #function to detect when button a is pressed.
@@ -307,14 +307,13 @@ def button_a(button, pressed):
 #pressed:the action that was preformed on the button.
 @buttonshim.on_press(buttonshim.BUTTON_B)
 def button_b(button, pressed):
-	print("blah")
 	global Bpress
 	Bpress += 1
-	#mutex1.acquire(False)
-	#mutex2.acquire(False)
-	#mutex2.release()
-	#mutex3.acquire(False)
-	#mutex4.acquire(False)
+	mutex1.acquire(False)
+	if(mutex2.locked() == True):
+		mutex2.release()
+	mutex3.acquire(False)
+	mutex4.acquire(False)
 	readf(12,Bpress,mutex2)
 
 #function to detect when button a is pressed.
@@ -329,10 +328,11 @@ def button_c(button, pressed):
 	global Cpress
 	Cpress += 1
 	#mutex3.acquire(False)
-	#mutex3.release()
-	#mutex2 = Lock()
-	#mutex1 = Lock()
-	#mutex4 = Lock()
+	mutex1.acquire(False)
+	mutex2.acquire(False)
+	if(mutex3.locked() == True):
+		mutex3.release()
+	mutex4.acquire(False)
 	readf(24,Cpress,mutex3)
 
 #function to detect when button a is pressed.
@@ -346,13 +346,14 @@ def button_c(button, pressed):
 def button_d(button, pressed):
 	global Dpress
 	Dpress += 1
-	#mutex4.acquire(False)
-	#mutex4.release()
-	#mutex1 = Lock()
-	#mutex2 = Lock()
-	#mutex3 = Lock()
+	mutex1 = Lock()
+	mutex2 = Lock()
+	mutex3 = Lock()
+	if(mutex4.locked() == True):
+		mutex4.release()
 	readf(36,Dpress,mutex4)
 
 #wait initially for the first button to be pressed
+print("Press a button to begin")
 signal.pause()
 		
