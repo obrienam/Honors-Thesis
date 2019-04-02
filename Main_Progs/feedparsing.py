@@ -269,6 +269,14 @@ def readf(i,press,mutex):
 				if(types == "Weather"):
 					weatherParse(feed,prefs,num,mutex)	
 
+					
+def checkthreads(ocount, ncount):
+	if(ncount > ocount):
+		for thread in threading.enumerate():
+			thread.join()
+			if(threading.activeCount() == ocount):
+				break
+
 #global variables for the number of times 
 #each button has been pressed
 Apress = 0
@@ -354,6 +362,7 @@ def button_d(button, pressed):
 	readf(36,Dpress,mutex4)
 
 #wait initially for the first button to be pressed
+numThreads = threading.activeCount()
 print("Press a button to begin")
 signal.pause()
 		
