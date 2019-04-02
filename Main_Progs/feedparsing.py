@@ -38,7 +38,7 @@ def newsParse(feed, prefs, num, stime, sendTo, press,mutex):
 	print("Feed title: " + d['feed']['title'])
 	#loop forever, parsing the current feed content
 	while True:
-		if(mutex.locked()==False):
+		if(True):
 			hlines = []
 			hlinks = []	
 			#get the headlines and links,
@@ -169,7 +169,7 @@ def weatherParse(feed, prefs,days,mutex):
 	#loop forever, parsing the 
 	#current weather data.
 	while True:
-		mutex.acquire()
+		#mutex.acquire()
 		#Clear list of data from
 		#previous iteration.
 		fcast = []
@@ -291,11 +291,11 @@ mutex4 = Lock();
 def button_a(button, pressed):
 	global Apress
 	Apress += 1
-	mutex1.acquire(False)
-	mutex1.release()
-	mutex2.acquire(False)
-	mutex3.acquire(False)
-	mutex4.acquire(False)
+	#mutex1.acquire(False)
+	#mutex1.release()
+	#mutex2.acquire(False)
+	#mutex3.acquire(False)
+	#mutex4.acquire(False)
 	readf(0,Apress,mutex1)
 
 #function to detect when button a is pressed.
@@ -310,11 +310,11 @@ def button_b(button, pressed):
 	print("blah")
 	global Bpress
 	Bpress += 1
-	mutex1.acquire(False)
-	mutex2.acquire(False)
-	mutex2.release()
-	mutex3.acquire(False)
-	mutex4.acquire(False)
+	#mutex1.acquire(False)
+	#mutex2.acquire(False)
+	#mutex2.release()
+	#mutex3.acquire(False)
+	#mutex4.acquire(False)
 	readf(12,Bpress,mutex2)
 
 #function to detect when button a is pressed.
@@ -328,11 +328,11 @@ def button_b(button, pressed):
 def button_c(button, pressed):
 	global Cpress
 	Cpress += 1
-	mutex3.acquire(False)
-	mutex3.release()
-	mutex2 = Lock()
-	mutex1 = Lock()
-	mutex4 = Lock()
+	#mutex3.acquire(False)
+	#mutex3.release()
+	#mutex2 = Lock()
+	#mutex1 = Lock()
+	#mutex4 = Lock()
 	readf(24,Cpress,mutex3)
 
 #function to detect when button a is pressed.
@@ -346,11 +346,11 @@ def button_c(button, pressed):
 def button_d(button, pressed):
 	global Dpress
 	Dpress += 1
-	mutex4.acquire(False)
-	mutex4.release()
-	mutex1 = Lock()
-	mutex2 = Lock()
-	mutex3 = Lock()
+	#mutex4.acquire(False)
+	#mutex4.release()
+	#mutex1 = Lock()
+	#mutex2 = Lock()
+	#mutex3 = Lock()
 	readf(36,Dpress,mutex4)
 
 #wait initially for the first button to be pressed
