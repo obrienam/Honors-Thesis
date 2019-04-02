@@ -62,7 +62,7 @@ def newsParse(feed, prefs, num, stime, sendTo,lturn):
 			#that were not part of the
 			#previous iteration (print all 
 			#if it is the first iteration).
-			if(hlines != ohlines && pressed[lturn] == numpressed):
+			if(hlines != ohlines and pressed[lturn] == numpressed):
 				difflines = diff(hlines,ohlines)
 				for word in reversed(difflines):
 					print(word)
