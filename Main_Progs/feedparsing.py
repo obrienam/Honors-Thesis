@@ -40,7 +40,7 @@ def newsParse(feed, prefs, num, stime, sendTo,lturn):
 	#print feed title
 	print("Feed title: " + d['feed']['title']) + "\n"
 	#loop forever, parsing the current feed content
-	while True:
+	while(press[lturn-1] == numpressed):
 		if(turn == lturn):
 			hlines = []
 			hlinks = []	
@@ -63,13 +63,11 @@ def newsParse(feed, prefs, num, stime, sendTo,lturn):
 			#that were not part of the
 			#previous iteration (print all 
 			#if it is the first iteration).
-			if(hlines != ohlines and press[lturn-1] == numpressed):
+			if(hlines != ohlines):
 				difflines = diff(hlines,ohlines)
 				for word in reversed(difflines):
 					print(word) + "\n"
 				ohlines = hlines
-			#wait 5 seconds
-			time.sleep(5)
 			#check the current time. if 
 			#it matches the time parameter,
 			#and this is the first time
@@ -83,6 +81,8 @@ def newsParse(feed, prefs, num, stime, sendTo,lturn):
 			if(stime[0] ==  hour and stime[1] == ntime.minute and numpressed == 1 and send == True):
 				send = False
 				email(hlinks,hlines,sendTo)
+			#wait 5 seconds
+			time.sleep(5)
 			#update the feed dictionary
 			#for the next iteration
 			d = feedparser.parse(feed)
@@ -173,7 +173,7 @@ def weatherParse(feed, prefs,days,lturn):
 	numpressed = press[lturn-1]
 	#loop forever, parsing the 
 	#current weather data.
-	while True:
+	while(press[lturn-1] == numpressed):
 		if(turn == lturn):
 			#Clear list of data from
 			#previous iteration.
@@ -206,7 +206,7 @@ def weatherParse(feed, prefs,days,lturn):
 			#if the forecast of this iteration
 			#is different than the last, print
 			#out the new forecast
-			if(fcast != ofcast and press[lturn-1] == numpressed):
+			if(fcast != ofcast ):
 				for word in (fcast):
 					print(word) + "\n"
 				ofcast = fcast
@@ -286,10 +286,6 @@ def checkthreads(ocount, ncount):
 #each button has been pressed
 press = [0,0,0,0]
 turn = 0
-#mutex1 = Lock();
-#mutex2 = Lock();
-#mutex3 = Lock();
-#mutex4 = Lock();
 #function to detect when button a is pressed.
 #increment the button variable and then call
 #readf function with the appropriate starting 
@@ -299,10 +295,10 @@ turn = 0
 #pressed:the action that was preformed on the button.
 @buttonshim.on_press(buttonshim.BUTTON_A)
 def button_a(button, pressed):
-	global Apress
+	global press
+	press[0] += 1
 	global turn
 	turn = 1
-	press[0] += 1
 	readf(0,1)
 
 #function to detect when button a is pressed.
@@ -351,7 +347,6 @@ def button_d(button, pressed):
 	readf(36,4)
 
 #wait initially for the first button to be pressed
-numThreads = threading.activeCount()
 print("Press a button to begin")
 signal.pause()
 		
