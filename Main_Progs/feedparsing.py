@@ -194,7 +194,7 @@ def weatherParse(feed, prefs,days,lturn):
 					forecasts = forecast.split()
 					data = weathersearch(prefs, forecasts)
 					if data == "None":
-						print("No"),
+						fcast.append("No ")
 						for word in prefs[:-1]:
 							fcast.append(word + ", ")
 						fcast.append(prefs[-1])
@@ -203,16 +203,16 @@ def weatherParse(feed, prefs,days,lturn):
 						s = s.join(data)
 						fcast.append(s)
 		
-				#if the forecast of this iteration
-				#is different than the last, print
-				#out the new forecast
-				if(fcast != ofcast and press[lturn-1] == numpressed):
-					for word in (fcast):
-						print(word) + "\n"
-					ofcast = fcast
-				#sleep five seconds, update feed dictionary
-				time.sleep(5)
-				d = feedparser.parse(feed)
+			#if the forecast of this iteration
+			#is different than the last, print
+			#out the new forecast
+			if(fcast != ofcast and press[lturn-1] == numpressed):
+				for word in (fcast):
+					print(word) + "\n"
+				ofcast = fcast
+			#sleep five seconds, update feed dictionary
+			time.sleep(5)
+			d = feedparser.parse(feed)
 	
 #search through the forecast(line)
 #for the words specified in prefs. 
