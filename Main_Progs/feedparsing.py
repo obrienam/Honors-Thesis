@@ -34,10 +34,11 @@ def newsParse(feed, prefs, num, stime, sendTo,lturn):
 	hlines = [];
 	hlinks = [];
 	ohlines = [" "]*num;
-	numpressed = pressed[lturn]
+	global press
+	numpressed = press[lturn-1]
 	send = True
 	#print feed title
-	print("Feed title: " + d['feed']['title'])
+	print("Feed title: " + d['feed']['title']) + "\n"
 	#loop forever, parsing the current feed content
 	while True:
 		if(turn == lturn):
@@ -62,10 +63,10 @@ def newsParse(feed, prefs, num, stime, sendTo,lturn):
 			#that were not part of the
 			#previous iteration (print all 
 			#if it is the first iteration).
-			if(hlines != ohlines and pressed[lturn] == numpressed):
+			if(hlines != ohlines and press[lturn-1] == numpressed):
 				difflines = diff(hlines,ohlines)
 				for word in reversed(difflines):
-					print(word)
+					print(word) + "\n"
 				ohlines = hlines
 			#wait 5 seconds
 			time.sleep(5)
@@ -160,7 +161,7 @@ def newssearch(prefs, line):
 #by the user
 #days: the number of days to include in the 
 #forecast
-def weatherParse(feed, prefs,days,mutex):
+def weatherParse(feed, prefs,days,lturn):
 	#clear the console
 	clear = lambda: os.system('clear');
 	clear();
@@ -168,10 +169,12 @@ def weatherParse(feed, prefs,days,mutex):
 	d = feedparser.parse(feed)
 	fcast = []
 	ofcast = [] * 2*days
+	global press
+	numpressed = press[lturn-1]
 	#loop forever, parsing the 
 	#current weather data.
 	while True:
-		if(mutex.locked() == False):
+		if(turn == lturn):
 			#Clear list of data from
 			#previous iteration.
 			fcast = []
@@ -203,7 +206,7 @@ def weatherParse(feed, prefs,days,mutex):
 				#if the forecast of this iteration
 				#is different than the last, print
 				#out the new forecast
-				if fcast != ofcast:
+				if(fcast != ofcast and press[lturn-1] == numpressed):
 					for word in (fcast):
 						print(word) + "\n"
 					ofcast = fcast
@@ -238,7 +241,7 @@ def weathersearch(prefs, line):
 #i: starting line number.
 #press: the number of times the button 
 #has been pressed.
-def readf(press,lturn):
+def readf(i,lturn):
 	types = "init"
 	feed = "init"
 	prefs = []
