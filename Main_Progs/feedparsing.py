@@ -175,6 +175,8 @@ def weatherParse(feed, prefs,days,lturn):
 	#current weather data.
 	while(press[lturn-1] == numpressed):
 		if(turn == lturn):
+			print(turn)
+			print(lturn)
 			#Clear list of data from
 			#previous iteration.
 			fcast = []
@@ -206,7 +208,7 @@ def weatherParse(feed, prefs,days,lturn):
 			#if the forecast of this iteration
 			#is different than the last, print
 			#out the new forecast
-			if(fcast != ofcast ):
+			if(fcast != ofcast):
 				for word in (fcast):
 					print(word) + "\n"
 				ofcast = fcast
@@ -271,9 +273,10 @@ def readf(i,lturn):
 				sendTo = fp.readline().rstrip()
 				if(types == "News"):
 					newsParse(feed,prefs,num,time,sendTo,lturn)
+					return
 				if(types == "Weather"):
 					weatherParse(feed,prefs,num,lturn)	
-
+					return
 					
 def checkthreads(ocount, ncount):
 	if(ncount > ocount):
@@ -300,6 +303,7 @@ def button_a(button, pressed):
 	global turn
 	turn = 1
 	readf(0,1)
+	return
 
 #function to detect when button a is pressed.
 #increment the button variable and then call
@@ -315,6 +319,7 @@ def button_b(button, pressed):
 	global turn
 	turn = 2
 	readf(12,2)
+	return
 
 #function to detect when button a is pressed.
 #increment the button variable and then call
@@ -323,6 +328,7 @@ def button_b(button, pressed):
 #parameters
 #button:the button that was pressed.
 #pressed:the action that was preformed on the button.
+
 @buttonshim.on_press(buttonshim.BUTTON_C)
 def button_c(button, pressed):
 	global press
@@ -330,6 +336,7 @@ def button_c(button, pressed):
 	global turn
 	turn = 3
 	readf(24,3)
+	return
 
 #function to detect when button a is pressed.
 #increment the button variable and then call
@@ -345,6 +352,7 @@ def button_d(button, pressed):
 	global turn
 	turn = 4
 	readf(36,4)
+	return
 
 #wait initially for the first button to be pressed
 print("Press a button to begin")
