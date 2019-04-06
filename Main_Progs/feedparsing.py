@@ -301,13 +301,6 @@ def readf(i,lturn):
 				if(types == "Weather"):
 					weatherParse(feed,prefs,num,lturn)	
 					return
-					
-def checkthreads(ocount, ncount):
-	if(ncount > ocount):
-		for thread in threading.enumerate():
-			thread.join()
-			if(threading.activeCount() == ocount):
-				break
 
 #global variables for the number of times 
 #each button has been pressed
