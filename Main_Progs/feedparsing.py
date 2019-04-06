@@ -50,6 +50,7 @@ def newsParse(feed, prefs, num, stime, sendTo,lturn):
 			for i in range(0,num):	
 				hline = d['entries'][i]['title']
 				hlink = d['entries'][i]['link']
+				body = d['entries'][i]['description']
 				if prefs[0] == "None":
 					hlines.append(hline)
 					hlinks.append(hlink)
@@ -59,6 +60,11 @@ def newsParse(feed, prefs, num, stime, sendTo,lturn):
 					if data != "None":
 						hlines.append(hline)
 						hlinks.append(hlink)
+					else:
+						found = bodysearch(prefs,body)
+						if found:
+							hlines.append(hline)
+							hlinks.append(hlink)
 			#print out any headlines
 			#that were not part of the
 			#previous iteration (print all 
@@ -136,6 +142,7 @@ def diff(hlines,ohlines):
 		if found == False:
 			difflines.append(hlines[i]);
 	return difflines
+
 #searches a headline for a 
 #specific preference keyword.
 #returns the line if the word
@@ -150,6 +157,23 @@ def newssearch(prefs, line):
 			if p in word:
 				return line
 	return "None"
+
+#searches through the body of an article
+#for a specific preference keyword.
+#returns true if the word
+#is present, false if it is not
+#found.
+#parameters:
+#prefs: the list of preferences
+#body: the body text of the article
+def bodysearch(prefs, body):	
+	s = " "
+	s = s.join(body)
+        for p in prefs:
+		for sentence in s.split('.'):
+			if p.lower() in sentence or p.capitalize() in sentence:
+				return True
+	return false
 
 #parses the RSS feed specified by 
 #feed, taking into account the 
@@ -223,9 +247,9 @@ def weatherParse(feed, prefs,days,lturn):
 #parameters:
 #prefs: the list of preferences
 #line: the string of the forecast. 
-def weathersearch(prefs, line):	
+def weathersearch(prefs, fcast):	
 	s = " "
-	s = s.join(line)
+	s = s.join(fcast)
 	sall = []
         for p in prefs:
 		for sentence in s.split('.'):
