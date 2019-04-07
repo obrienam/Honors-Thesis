@@ -50,7 +50,9 @@ def newsParse(feed, prefs, num, stime, sendTo,lturn):
 			for i in range(0,num):	
 				hline = d['entries'][i]['title']
 				hlink = d['entries'][i]['link']
-				body = d['entries'][i]['description']
+				body = d['entries'][i]['summary']
+				#if(hline == "Art and form: Dancer Hope Boykin explores freedom with AirPods"):
+					#print(body)
 				if prefs[0] == "None":
 					hlines.append(hline)
 					hlinks.append(hlink)
@@ -167,13 +169,15 @@ def newssearch(prefs, line):
 #prefs: the list of preferences
 #body: the body text of the article
 def bodysearch(prefs, body):	
-	s = " "
-	s = s.join(body)
+	#s = " "
+	#s = s.join(body)
         for p in prefs:
-		for sentence in s.split('.'):
-			if p.lower() in sentence or p.capitalize() in sentence:
+		pspace = " " + p.lower()
+		upspace = " " + p.title()
+		for sentence in body.split('.'):
+			if pspace in sentence or upspace in sentence:
 				return True
-	return false
+	return False
 
 #parses the RSS feed specified by 
 #feed, taking into account the 
@@ -199,8 +203,6 @@ def weatherParse(feed, prefs,days,lturn):
 	#current weather data.
 	while(press[lturn-1] == numpressed):
 		if(turn == lturn):
-			print(turn)
-			print(lturn)
 			#Clear list of data from
 			#previous iteration.
 			fcast = []
