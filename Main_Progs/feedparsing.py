@@ -40,7 +40,7 @@ def newsParse(feed, prefs, num, stime, sendTo,lturn):
 	#print feed title
 	print("Feed title: " + d['feed']['title']) + "\n"
 	#loop forever, parsing the current feed content
-	while True:
+	while(press[lturn-1] == numpressed):
 		if(turn == lturn):
 			hlines = []
 			hlinks = []	
@@ -50,6 +50,9 @@ def newsParse(feed, prefs, num, stime, sendTo,lturn):
 			for i in range(0,num):	
 				hline = d['entries'][i]['title']
 				hlink = d['entries'][i]['link']
+				body = d['entries'][i]['summary']
+				#if(hline == "Art and form: Dancer Hope Boykin explores freedom with AirPods"):
+					#print(body)
 				if prefs[0] == "None":
 					hlines.append(hline)
 					hlinks.append(hlink)
@@ -59,17 +62,20 @@ def newsParse(feed, prefs, num, stime, sendTo,lturn):
 					if data != "None":
 						hlines.append(hline)
 						hlinks.append(hlink)
+					else:
+						found = bodysearch(prefs,body)
+						if found:
+							hlines.append(hline)
+							hlinks.append(hlink)
 			#print out any headlines
 			#that were not part of the
 			#previous iteration (print all 
 			#if it is the first iteration).
-			if(hlines != ohlines and press[lturn-1] == numpressed):
+			if(hlines != ohlines):
 				difflines = diff(hlines,ohlines)
 				for word in reversed(difflines):
 					print(word) + "\n"
 				ohlines = hlines
-			#wait 5 seconds
-			time.sleep(5)
 			#check the current time. if 
 			#it matches the time parameter,
 			#and this is the first time
@@ -83,6 +89,8 @@ def newsParse(feed, prefs, num, stime, sendTo,lturn):
 			if(stime[0] ==  hour and stime[1] == ntime.minute and numpressed == 1 and send == True):
 				send = False
 				email(hlinks,hlines,sendTo)
+			#wait 5 seconds
+			time.sleep(5)
 			#update the feed dictionary
 			#for the next iteration
 			d = feedparser.parse(feed)
@@ -136,6 +144,7 @@ def diff(hlines,ohlines):
 		if found == False:
 			difflines.append(hlines[i]);
 	return difflines
+
 #searches a headline for a 
 #specific preference keyword.
 #returns the line if the word
@@ -150,6 +159,25 @@ def newssearch(prefs, line):
 			if p in word:
 				return line
 	return "None"
+
+#searches through the body of an article
+#for a specific preference keyword.
+#returns true if the word
+#is present, false if it is not
+#found.
+#parameters:
+#prefs: the list of preferences
+#body: the body text of the article
+def bodysearch(prefs, body):	
+	#s = " "
+	#s = s.join(body)
+        for p in prefs:
+		pspace = " " + p.lower()
+		upspace = " " + p.title()
+		for sentence in body.split('.'):
+			if pspace in sentence or upspace in sentence:
+				return True
+	return False
 
 #parses the RSS feed specified by 
 #feed, taking into account the 
@@ -173,7 +201,7 @@ def weatherParse(feed, prefs,days,lturn):
 	numpressed = press[lturn-1]
 	#loop forever, parsing the 
 	#current weather data.
-	while True:
+	while(press[lturn-1] == numpressed):
 		if(turn == lturn):
 			#Clear list of data from
 			#previous iteration.
@@ -206,7 +234,7 @@ def weatherParse(feed, prefs,days,lturn):
 			#if the forecast of this iteration
 			#is different than the last, print
 			#out the new forecast
-			if(fcast != ofcast and press[lturn-1] == numpressed):
+			if(fcast != ofcast):
 				for word in (fcast):
 					print(word) + "\n"
 				ofcast = fcast
@@ -221,9 +249,9 @@ def weatherParse(feed, prefs,days,lturn):
 #parameters:
 #prefs: the list of preferences
 #line: the string of the forecast. 
-def weathersearch(prefs, line):	
+def weathersearch(prefs, fcast):	
 	s = " "
-	s = s.join(line)
+	s = s.join(fcast)
 	sall = []
         for p in prefs:
 		for sentence in s.split('.'):
@@ -271,25 +299,15 @@ def readf(i,lturn):
 				sendTo = fp.readline().rstrip()
 				if(types == "News"):
 					newsParse(feed,prefs,num,time,sendTo,lturn)
+					return
 				if(types == "Weather"):
 					weatherParse(feed,prefs,num,lturn)	
-
-					
-def checkthreads(ocount, ncount):
-	if(ncount > ocount):
-		for thread in threading.enumerate():
-			thread.join()
-			if(threading.activeCount() == ocount):
-				break
+					return
 
 #global variables for the number of times 
 #each button has been pressed
 press = [0,0,0,0]
 turn = 0
-#mutex1 = Lock();
-#mutex2 = Lock();
-#mutex3 = Lock();
-#mutex4 = Lock();
 #function to detect when button a is pressed.
 #increment the button variable and then call
 #readf function with the appropriate starting 
@@ -299,11 +317,12 @@ turn = 0
 #pressed:the action that was preformed on the button.
 @buttonshim.on_press(buttonshim.BUTTON_A)
 def button_a(button, pressed):
-	global Apress
+	global press
+	press[0] += 1
 	global turn
 	turn = 1
-	press[0] += 1
 	readf(0,1)
+	return
 
 #function to detect when button a is pressed.
 #increment the button variable and then call
@@ -319,6 +338,7 @@ def button_b(button, pressed):
 	global turn
 	turn = 2
 	readf(12,2)
+	return
 
 #function to detect when button a is pressed.
 #increment the button variable and then call
@@ -327,6 +347,7 @@ def button_b(button, pressed):
 #parameters
 #button:the button that was pressed.
 #pressed:the action that was preformed on the button.
+
 @buttonshim.on_press(buttonshim.BUTTON_C)
 def button_c(button, pressed):
 	global press
@@ -334,6 +355,7 @@ def button_c(button, pressed):
 	global turn
 	turn = 3
 	readf(24,3)
+	return
 
 #function to detect when button a is pressed.
 #increment the button variable and then call
@@ -349,9 +371,9 @@ def button_d(button, pressed):
 	global turn
 	turn = 4
 	readf(36,4)
+	return
 
 #wait initially for the first button to be pressed
-numThreads = threading.activeCount()
 print("Press a button to begin")
 signal.pause()
 		
