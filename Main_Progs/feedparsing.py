@@ -3,6 +3,7 @@ import feedparser
 import time
 import threading
 import os
+import sys
 import smtplib, ssl
 import email
 import mimetypes
@@ -51,8 +52,6 @@ def newsParse(feed, prefs, num, stime, sendTo,lturn):
 				hline = d['entries'][i]['title']
 				hlink = d['entries'][i]['link']
 				body = d['entries'][i]['summary']
-				#if(hline == "Art and form: Dancer Hope Boykin explores freedom with AirPods"):
-					#print(body)
 				if prefs[0] == "None":
 					hlines.append(hline)
 					hlinks.append(hlink)
@@ -76,25 +75,22 @@ def newsParse(feed, prefs, num, stime, sendTo,lturn):
 				for word in reversed(difflines):
 					print(word) + "\n"
 				ohlines = hlines
-			#check the current time. if 
-			#it matches the time parameter,
-			#and this is the first time
-			#this button has been pressed,
-			#send an email with the feed
-			#information
-			ntime = datetime.datetime.now()
-			hour = ntime.hour
-			if(ntime.hour > 12):
-					hour = hour - 12
-			if(stime[0] ==  hour and stime[1] == ntime.minute and numpressed == 1 and send == True):
-				send = False
-				email(hlinks,hlines,sendTo)
-			#wait 5 seconds
-			time.sleep(5)
-			#update the feed dictionary
-			#for the next iteration
-			d = feedparser.parse(feed)
-
+		#check the current time. if 
+		#it matches the time parameter,
+		#and this is the first time
+		#this button has been pressed,
+		#send an email with the feed
+		#information
+		ntime = datetime.datetime.now()
+		hour = ntime.hour
+		if(ntime.hour > 12):
+				hour = hour - 12
+		if(stime[0] ==  hour and stime[1] == ntime.minute and numpressed == 1 and send == True):
+			send = False
+			email(hlinks,hlines,sendTo)
+		#update the feed dictionary
+		d = feedparser.parse(feed)
+	return
 
 #email() function takes in 3 parameters and
 #sends an email containing the appropriate 
@@ -222,10 +218,11 @@ def weatherParse(feed, prefs,days,lturn):
 					forecasts = forecast.split()
 					data = weathersearch(prefs, forecasts)
 					if data == "None":
-						fcast.append("No ")
+						text = "No "
 						for word in prefs[:-1]:
-							fcast.append(word + ", ")
-						fcast.append(prefs[-1])
+							text+=(word + ", ")
+						text+=prefs[-1]
+						fcast.append(text)
 					else:
 						s = " "
 						s = s.join(data)
@@ -238,9 +235,10 @@ def weatherParse(feed, prefs,days,lturn):
 				for word in (fcast):
 					print(word) + "\n"
 				ofcast = fcast
-			#sleep five seconds, update feed dictionary
-			time.sleep(5)
+			#update feed dictionary
+			#time.sleep(5)
 			d = feedparser.parse(feed)
+	return
 	
 #search through the forecast(line)
 #for the words specified in prefs. 
@@ -276,7 +274,12 @@ def readf(i,lturn):
 	num = 0
 	time = [0]*2
 	sendTo = "None"
-	with open("preferences.txt") as fp:
+	fname = "";
+	if len(sys.argv) == 1:
+		fname = "preferences.txt"
+	elif len(sys.argv) == 2:
+		fname = sys.argv[1]
+	with open(fname) as fp:
 		for j in range(0,i):
 			fp.readline()
 		line = "init"
@@ -304,14 +307,16 @@ def readf(i,lturn):
 					weatherParse(feed,prefs,num,lturn)	
 					return
 
-#global variables for the number of times 
-#each button has been pressed
+#global variables to keep track of the 
+#number of times each button is pressed
+#and whose turn it is to print.
 press = [0,0,0,0]
 turn = 0
+
 #function to detect when button a is pressed.
-#increment the button variable and then call
-#readf function with the appropriate starting 
-#line number and button variable value.
+#increment the press index, set turn to the right value,
+#and then call the readf function with the appropriate 
+#starting line number and button variable value.
 #parameters
 #button:the button that was pressed.
 #pressed:the action that was preformed on the button.
@@ -324,10 +329,10 @@ def button_a(button, pressed):
 	readf(0,1)
 	return
 
-#function to detect when button a is pressed.
-#increment the button variable and then call
-#readf function with the appropriate starting 
-#line number and button variable value.
+#function to detect when button b is pressed.
+#increment the press index, set turn to the right value,
+#and then call the readf function with the appropriate 
+#starting line number and button variable value.
 #parameters
 #button:the button that was pressed.
 #pressed:the action that was preformed on the button.
@@ -340,10 +345,10 @@ def button_b(button, pressed):
 	readf(12,2)
 	return
 
-#function to detect when button a is pressed.
-#increment the button variable and then call
-#readf function with the appropriate starting 
-#line number and button variable value.
+#function to detect when button c is pressed.
+#increment the press index, set turn to the right value,
+#and then call the readf function with the appropriate 
+#starting line number and button variable value.
 #parameters
 #button:the button that was pressed.
 #pressed:the action that was preformed on the button.
@@ -357,10 +362,10 @@ def button_c(button, pressed):
 	readf(24,3)
 	return
 
-#function to detect when button a is pressed.
-#increment the button variable and then call
-#readf function with the appropriate starting 
-#line number and button variable value.
+#function to detect when button d is pressed.
+#increment the press index, set turn to the right value,
+#and then call the readf function with the appropriate 
+#starting line number and button variable value.
 #parameters
 #button:the button that was pressed.
 #pressed:the action that was preformed on the button.
@@ -372,6 +377,19 @@ def button_d(button, pressed):
 	turn = 4
 	readf(36,4)
 	return
+
+#function to detect when button e is pressed.
+#prints a shut down message and
+#runs the system shutdown function,
+#turning off the appliance
+#parameters
+#button:the button that was pressed.
+#pressed:the action that was preformed on the button.
+@buttonshim.on_press(buttonshim.BUTTON_E)
+def button_e(button, pressed):
+	print("Powering Off")
+	pwroff = lambda: os.system('sudo shutdown now')
+	pwroff()
 
 #wait initially for the first button to be pressed
 print("Press a button to begin")
