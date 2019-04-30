@@ -83,9 +83,7 @@ def newsParse(feed, prefs, num, stime, sendTo,lturn):
 		#information
 		ntime = datetime.datetime.now()
 		hour = ntime.hour
-		if(ntime.hour > 12):
-				hour = hour - 12
-		if(stime[0] ==  hour and stime[1] == ntime.minute and numpressed == 1 and send == True):
+		if(stime[0] ==  hour and stime[1] == ntime.minute and send == True):
 			send = False
 			email(hlinks,hlines,sendTo)
 		#update the feed dictionary
