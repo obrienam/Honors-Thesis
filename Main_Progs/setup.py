@@ -20,14 +20,14 @@ def gatherinfo():
 			       "Sports Headlines on Google News: http://news.google.com/news/rss/"+
 			       "headlines/section/topic/SPORTS\n")
 			feed = raw_input("Please enter a feed url: ")
-		num = raw_input("Please enter the number of article to search through: ")
+		num = raw_input("Please enter the number of articles to search through: ")
 		pref = raw_input("Please enter any headline keywords(Each separated by a space): ")
 		prefs = pref.split(" ")
 		ansemail = raw_input("Would you like to have articles sent to your email address? (Type y or n): ")
 		time = "None"
 		sendTo = "None"
 		if(ansemail == "y"):
-			time = raw_input("Please enter the time you want to receive the email (HH:MM): ")
+			time = raw_input("Please enter the time you want to receive the email (HH:MM) in military time: ")
 			sendTo = raw_input("Please enter your email address: ")
 		return type,feed,num,prefs,time,sendTo
 	if(type == "Weather"):
@@ -67,9 +67,7 @@ def parsefile(type,feed,num,prefs,time,sendTo):
 #each iteration, transferring the responses 
 #between the function.
 def run():
-	i = 0
-	while (i<4):
+	for i in range(4):
 		type,feed,num,prefs,time,sendTo = gatherinfo()
 		parsefile(type,feed,num,prefs,time,sendTo)	
-		i+=1
 run()	
