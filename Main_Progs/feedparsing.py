@@ -111,8 +111,8 @@ def email(hlinks,hlines,sendTo):
 	message = MIMEMultipart()
 	message['Subject'] = "Feed Articles"
 	body = ""
-	for word1,word2 in zip(hlines,hlinks):
-		body += word1.replace(u"\u2019","'") + "\n" + word2 + "\n\n"
+	for lines,links in zip(hlines,hlinks):
+		body += lines.replace(u"\u2019","'") + "\n" + links + "\n\n"
 	text = MIMEText(body)
 	message.attach(text) 
 	#send the message
