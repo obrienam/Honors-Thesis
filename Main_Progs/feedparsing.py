@@ -150,7 +150,9 @@ def diff(hlines,ohlines):
 def newssearch(prefs, line):
 	for p in prefs:
 		for j, word in enumerate(line):
-			if p in word:
+			pspace = " " + p.lower()
+			upspace = " " + p.title()
+			if pspace in word or upspace in word:
 				return line
 	return "None"
 
@@ -166,10 +168,9 @@ def bodysearch(prefs, body):
 	#s = " "
 	#s = s.join(body)
         for p in prefs:
-		pspace = " " + p.lower()
-		upspace = " " + p.title()
+		plow = p.lower()
 		for sentence in body.split('.'):
-			if pspace in sentence or upspace in sentence:
+			if p in sentence or plow in sentence:
 				return True
 	return False
 
