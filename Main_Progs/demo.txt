@@ -5,23 +5,23 @@ https://www.apple.com/newsroom/rss-feed.rss
 Number of entries:
 5
 Content Preferences:
-Ears 
+Apple Fishermen 
 Time:
-11:14
+21:27
 SendTo:
 aidanobrien15@gmail.com
 Feed Type:
 News
 URL:
-https://www.reddit.com/r/news/.rss
+https://www.reddit.com/r/Thesis_Test/.rss
 Number of entries:
 5
 Content Preferences:
-None 
+Test Filter 
 Time:
-None
+21:27
 SendTo:
-None
+aidanobrien15@gmail.com
 Feed Type:
 Weather
 URL:
