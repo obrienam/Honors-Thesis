@@ -33,7 +33,7 @@ high low
 Time:
 None
 SendTo:
-None
+High Low
 Feed Type:
 Weather
 URL:
