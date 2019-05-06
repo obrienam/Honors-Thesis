@@ -27,19 +27,19 @@ Weather
 URL:
 https://www.rssweather.com/zipcode/28607/rss.php
 Number of entries:
-3
+2
 Content Preferences:
 high low 
 Time:
 None
 SendTo:
-High Low
+None
 Feed Type:
 Weather
 URL:
 https://www.rssweather.com/zipcode/28210/rss.php
 Number of entries:
-3
+2
 Content Preferences:
 Rain Sleet 
 Time:

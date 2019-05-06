@@ -214,8 +214,7 @@ def weatherParse(feed, prefs,days,lturn):
 				if(prefs[0] == "None"):
 					fcast.append(forecast)
 				else:	
-					forecasts = forecast.split()
-					data = weathersearch(prefs, forecasts)
+					data = weathersearch(prefs, forecast)
 					if data == "None":
 						text = "No "
 						for word in prefs[:-1]:
@@ -241,17 +240,15 @@ def weatherParse(feed, prefs,days,lturn):
 	
 #search through the forecast(line)
 #for the words specified in prefs. 
-#return the parts of the sentence
+#return the sentence
 #that contain the preference.
 #parameters:
 #prefs: the list of preferences
 #line: the string of the forecast. 
 def weathersearch(prefs, fcast):	
-	s = " "
-	s = s.join(fcast)
 	sall = []
         for p in prefs:
-		for sentence in s.split('.'):
+		for sentence in fcast.split('.'):
 			if p.lower() in sentence or p.capitalize() in sentence:
 				sall.append(sentence + ".")
 	if len(sall) == 0:
