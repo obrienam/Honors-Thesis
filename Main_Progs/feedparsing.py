@@ -6,14 +6,11 @@ import os
 import sys
 import smtplib, ssl
 import email
-import mimetypes
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from contextlib import contextmanager
 import buttonshim
 import signal
 import datetime
-from threading import Thread, Lock
 
 #newstest() function takes in three parameters and loops through
 #the specified number of headlines. After a certain time interval,
