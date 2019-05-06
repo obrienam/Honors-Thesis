@@ -29,7 +29,7 @@ https://www.rssweather.com/zipcode/28607/rss.php
 Number of entries:
 3
 Content Preferences:
-high low 
+Sun 
 Time:
 None
 SendTo:
